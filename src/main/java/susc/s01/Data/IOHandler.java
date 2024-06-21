@@ -4,20 +4,22 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
-import susc.s01.IOHandler.FilePathMap;
+import susc.s01.Data.Log.Log;
+import susc.s01.IOHandler.FileMap;
 
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class IOHandler<E> {
+public class IOHandler {
 
-    public ArrayList<E> importData(FilePathMap filePath, String affiliatedFunction) {
+    public <E extends Log> ArrayList<E> importData(FileMap filePath, String affiliatedFunction) {
         ArrayList<E> totalData = new ArrayList<>();
 
         try(FileReader reader = new FileReader(filePath.getFilePathInstance())) {
-            totalData = new Gson().fromJson(reader, new TypeToken<ArrayList<E>>(){}.getType());
+            totalData = new Gson().fromJson(reader, TypeToken.getParameterized(
+                    ArrayList.class, filePath.getFileInstanceType()).getType());
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getLogger().info(affiliatedFunction + " Fail to ImportData");
@@ -27,7 +29,7 @@ public class IOHandler<E> {
         return totalData;
     }
 
-    public void exportData(FilePathMap filePath, String affiliatedFunction,  ArrayList<E> totalDataValue) {
+    public <E extends Log> void exportData(FileMap filePath, String affiliatedFunction, ArrayList<E> totalDataValue) {
         try (FileWriter writer = new FileWriter(filePath.getFilePathInstance())) {
             new GsonBuilder()
                     .setPrettyPrinting()
