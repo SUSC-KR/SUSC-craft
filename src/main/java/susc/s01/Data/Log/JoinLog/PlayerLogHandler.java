@@ -1,7 +1,7 @@
 package susc.s01.Data.Log.JoinLog;
 
 import org.bukkit.Bukkit;
-import susc.s01.Data.Log.Handler;
+import susc.s01.Data.Handler;
 import susc.s01.Data.Log.LogData;
 
 import java.util.ArrayList;

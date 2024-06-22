@@ -1,6 +1,4 @@
-package susc.s01.Data.Log;
-
-import susc.s01.Data.Log.JoinLog.PlayerLog;
+package susc.s01.Data;
 
 import java.util.ArrayList;
 
