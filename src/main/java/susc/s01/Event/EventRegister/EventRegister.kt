@@ -1,22 +1,21 @@
-package susc.s01.Event.EventRegister;
+package susc.s01.Event.EventRegister
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import susc.s01.Event.LoggingJoinPlayer;
-import susc.s01.Event.LoggingQuitPlayer;
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import susc.s01.Event.LoggingJoinPlayer
+import susc.s01.Event.LoggingQuitPlayer
 
-public class EventRegister implements Listener {
-
+class EventRegister : Listener {
     @EventHandler(priority = EventPriority.LOWEST)
-    public void PlayerJoinEvent(PlayerJoinEvent event) {
-        new LoggingJoinPlayer(event);
+    fun PlayerJoinEvent(event: PlayerJoinEvent) {
+        LoggingJoinPlayer(event)
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void PlayerLeaveEvent(PlayerQuitEvent event) {
-        new LoggingQuitPlayer(event);
+    fun PlayerLeaveEvent(event: PlayerQuitEvent) {
+        LoggingQuitPlayer(event)
     }
 }

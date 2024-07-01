@@ -1,13 +1,13 @@
-package susc.s01.Data;
+package susc.s01.Data
 
-import java.util.ArrayList;
-
-public interface Handler<K,E> {
-    void putData(E e);
-    E getData(K k);
-    Boolean replaceData(E e) throws Exception;
-    Boolean removeData(K k) throws Exception;
-    ArrayList<E> getAllUserTable();
-    void updateAllUserData(ArrayList<E> newUserData);
+interface Handler<K, E> {
+    fun putData(e: E)
+    fun getData(k: K): E
+    @Throws(Exception::class)
+    fun replaceData(e: E): Boolean
+    @Throws(Exception::class)
+    fun removeData(k: K): Boolean
+    val allUserTable: ArrayList<E>
+    fun updateAllUserData(newUserData: ArrayList<E>?)
 }
 

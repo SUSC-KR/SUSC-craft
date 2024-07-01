@@ -1,46 +1,49 @@
-package susc.s01.Data;
+package susc.s01.Data
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import org.bukkit.Bukkit;
-import susc.s01.Data.Log.Log;
-import susc.s01.IOHandler.FileMap;
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import org.bukkit.Bukkit
+import susc.s01.Data.Log.Log
+import susc.s01.IOHandler.FileMap
+import java.io.FileReader
+import java.io.FileWriter
+import java.io.IOException
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
+class IOHandler {
+    fun <E : Log?> importData(filePath: FileMap, affiliatedFunction: String): ArrayList<E> {
+        var totalData = ArrayList<E>()
 
-public class IOHandler {
-
-    public <E extends Log> ArrayList<E> importData(FileMap filePath, String affiliatedFunction) {
-        ArrayList<E> totalData = new ArrayList<>();
-
-        try(FileReader reader = new FileReader(filePath.getFilePathInstance())) {
-            totalData = new Gson().fromJson(reader, TypeToken.getParameterized(
-                    ArrayList.class, filePath.getFileInstanceType()).getType());
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().info(affiliatedFunction + " Fail to ImportData");
+        try {
+            FileReader(filePath.filePathInstance).use { reader ->
+                totalData = Gson().fromJson(
+                    reader, TypeToken.getParameterized(
+                        ArrayList::class.java, filePath.fileInstanceType
+                    ).type
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Bukkit.getLogger().info("$affiliatedFunction Fail to ImportData")
         }
 
-        Bukkit.getLogger().info(affiliatedFunction + " Success to ImportData");
-        return totalData;
+        Bukkit.getLogger().info("$affiliatedFunction Success to ImportData")
+        return totalData
     }
 
-    public <E extends Log> void exportData(FileMap filePath, String affiliatedFunction, ArrayList<E> totalDataValue) {
-        try (FileWriter writer = new FileWriter(filePath.getFilePathInstance())) {
-            new GsonBuilder()
+    fun <E : Log?> exportData(filePath: FileMap, affiliatedFunction: String, totalDataValue: ArrayList<E>?) {
+        try {
+            FileWriter(filePath.filePathInstance).use { writer ->
+                GsonBuilder()
                     .setPrettyPrinting()
                     .create()
-                    .toJson(totalDataValue,writer);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Bukkit.getLogger().info(affiliatedFunction + " Fail to ExportData");
+                    .toJson(totalDataValue, writer)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Bukkit.getLogger().info("$affiliatedFunction Fail to ExportData")
         }
 
-        Bukkit.getLogger().info(affiliatedFunction + " Success to ExportData");
+        Bukkit.getLogger().info("$affiliatedFunction Success to ExportData")
     }
 }

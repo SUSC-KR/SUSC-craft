@@ -1,41 +1,35 @@
-package susc.s01.Event;
+package susc.s01.Event
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
-import susc.s01.Data.Log.JoinLog.PlayerLog;
-import susc.s01.Data.Log.JoinLog.PlayerLogHandler;
+import org.bukkit.event.player.PlayerJoinEvent
+import susc.s01.Data.Log.JoinLog.PlayerLog
+import susc.s01.Data.Log.JoinLog.PlayerLogHandler
+import java.util.*
 
-import java.util.Calendar;
-import java.util.TimeZone;
+class LoggingJoinPlayer(private val event: PlayerJoinEvent) {
+    private val playerLogHandler: PlayerLogHandler = PlayerLogHandler.Companion.getInstance()
 
-public class LoggingJoinPlayer {
-    private final PlayerJoinEvent event;
-    private final PlayerLogHandler playerLogHandler = PlayerLogHandler.getInstance();
-
-    public LoggingJoinPlayer(PlayerJoinEvent event) {
-        this.event = event;
-        pushingPlayerJoinLog();
+    init {
+        pushingPlayerJoinLog()
     }
 
-    private void pushingPlayerJoinLog() {
+    private fun pushingPlayerJoinLog() {
         /*
         처음 접속하면 0으로 뜸
         */
-        Player player = this.event.getPlayer();
+        val player = event.player
 
-        PlayerLog currentPlayerLogData = this.playerLogHandler.getData(player.getUniqueId());
-        int playerJoinCount = 0;
-        if (currentPlayerLogData != null)
-            currentPlayerLogData.joinCount();
+        val currentPlayerLogData = playerLogHandler.getData(player.uniqueId)
+        val playerJoinCount = 0
+        currentPlayerLogData?.joinCount
 
-        PlayerLog playerLog = new PlayerLog(
-                player.getUniqueId(),
-                player.getName(),
-                playerJoinCount,
-                Calendar.getInstance(TimeZone.getTimeZone("JST")),
-                Calendar.getInstance(TimeZone.getTimeZone("JST"))
-        );
+        val playerLog = PlayerLog(
+            player.uniqueId,
+            player.name,
+            playerJoinCount,
+            Calendar.getInstance(TimeZone.getTimeZone("JST")),
+            Calendar.getInstance(TimeZone.getTimeZone("JST"))
+        )
 
-        playerLogHandler.putData(playerLog);
+        playerLogHandler.putData(playerLog)
     }
 }

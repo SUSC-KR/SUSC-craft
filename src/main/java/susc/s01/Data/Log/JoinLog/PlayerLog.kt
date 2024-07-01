@@ -1,15 +1,13 @@
-package susc.s01.Data.Log.JoinLog;
+package susc.s01.Data.Log.JoinLog
 
-import susc.s01.Data.Log.Log;
+import susc.s01.Data.Log.Log
+import java.util.*
 
-import java.util.Calendar;
-import java.util.UUID;
-
-public record PlayerLog(
-        UUID uuid,
-        String playerName,
-        int joinCount,
-        Calendar joinDate,
-        Calendar leaveDate
-) implements Log {
-}
+@JvmRecord
+data class PlayerLog(
+    val uuid: UUID,
+    val playerName: String,
+    val joinCount: Int,
+    val joinDate: Calendar,
+    val leaveDate: Calendar
+) : Log

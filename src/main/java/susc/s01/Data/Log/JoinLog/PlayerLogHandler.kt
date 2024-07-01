@@ -1,66 +1,64 @@
-package susc.s01.Data.Log.JoinLog;
+package susc.s01.Data.Log.JoinLog
 
-import org.bukkit.Bukkit;
-import susc.s01.Data.Handler;
-import susc.s01.Data.Log.LogData;
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import susc.s01.Data.Handler
+import susc.s01.Data.Log.LogData
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Consumer
 
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class PlayerLogHandler implements Handler<UUID, PlayerLog> {
-    private static class JoinLoggerHandlerHolder {
-        private final static PlayerLogHandler INSTANCE = new PlayerLogHandler();
+class PlayerLogHandler : Handler<UUID, PlayerLog?> {
+    private object JoinLoggerHandlerHolder {
+        val instance: PlayerLogHandler = PlayerLogHandler()
+            get() = JoinLoggerHandlerHolder.INSTANCE
     }
 
-    public static PlayerLogHandler getInstance() {
-        return JoinLoggerHandlerHolder.INSTANCE;
+    private val joinLogData: ConcurrentHashMap<UUID?, PlayerLog?>? = LogData.getJoinLogDataInstance()
+
+    @Synchronized
+    override fun putData(playerLog: PlayerLog?) {
+        joinLogData!![playerLog!!.uuid] = playerLog
     }
 
-    private final ConcurrentHashMap<UUID, PlayerLog> joinLogData = LogData.getJoinLogDataInstance();
-
-    @Override
-    public synchronized void putData(PlayerLog playerLog) {
-        joinLogData.put(playerLog.uuid(), playerLog);
+    @Synchronized
+    override fun getData(uuid: UUID): PlayerLog? {
+        return joinLogData!![uuid]
     }
 
-    @Override
-    public synchronized PlayerLog getData(UUID uuid) {
-        return joinLogData.get(uuid);
+    @Synchronized
+    @Throws(Exception::class)
+    override fun replaceData(playerLog: PlayerLog?): Boolean {
+        val legacy = joinLogData!![playerLog!!.uuid]
+        if (legacy == playerLog) throw Exception("Failed Replace Object > " + playerLog.uuid)
+
+        joinLogData.replace(playerLog.uuid, playerLog)
+        return true
     }
 
-    @Override
-    public synchronized Boolean replaceData(PlayerLog playerLog) throws Exception {
-        PlayerLog legacy = joinLogData.get(playerLog.uuid());
-        if (legacy.equals(playerLog))
-            throw new Exception("Failed Replace Object > " + playerLog.uuid());
+    @Synchronized
+    @Throws(Exception::class)
+    override fun removeData(uuid: UUID): Boolean {
+        if (joinLogData!![uuid] == null) throw Exception("Non Exists JoinData > $uuid")
 
-        joinLogData.replace(playerLog.uuid(), playerLog);
-        return true;
+        joinLogData.remove(uuid)
+        return true
     }
 
-    @Override
-    public synchronized Boolean removeData(UUID uuid) throws Exception  {
-        if (joinLogData.get(uuid) == null)
-            throw new Exception("Non Exists JoinData > " + uuid);
+    override val allUserTable: ArrayList<E>
+        get() {
+            Bukkit.getOnlinePlayers().forEach { player: Player -> getData(player.uniqueId) }
+            return ArrayList(ConcurrentHashMap(this.joinLogData).values)
+        }
 
-        joinLogData.remove(uuid);
-        return true;
+    override fun updateAllUserData(newUserData: ArrayList<PlayerLog?>?) {
+        joinLogData!!.clear()
+
+        if (newUserData == null) return
+
+        newUserData.forEach(Consumer { playerLog: PlayerLog? -> this.putData(playerLog) })
     }
 
-    @Override
-    public ArrayList<PlayerLog> getAllUserTable() {
-        Bukkit.getOnlinePlayers().forEach(player -> getData(player.getUniqueId()));
-        return new ArrayList<>(new ConcurrentHashMap<>(this.joinLogData).values());
-    }
-
-    @Override
-    public void updateAllUserData(ArrayList<PlayerLog> newUserData) {
-        this.joinLogData.clear();
-
-        if (newUserData == null)
-            return;
-
-        newUserData.forEach(this::putData);
+    companion object {
     }
 }
