@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 public class IOHandler {
 
-    public <E extends Log> ArrayList<E> importData(FileMap filePath, String affiliatedFunction) {
+    public <E extends Log> ArrayList<E> importData(FileMap filePath, String affiliatedFunction, Class<E> logObj) {
         ArrayList<E> totalData = new ArrayList<>();
 
         try(FileReader reader = new FileReader(filePath.getFilePathInstance())) {
             totalData = new Gson().fromJson(reader, TypeToken.getParameterized(
-                    ArrayList.class, filePath.getFileInstanceType()).getType());
+                    ArrayList.class, logObj).getType());
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getLogger().info(affiliatedFunction + " Fail to ImportData");
